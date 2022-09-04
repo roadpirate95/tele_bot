@@ -66,11 +66,8 @@ class Medicament:
 
         return [f'{i} : {arr[i]}' for i in range(len(arr))]
 
-    def get_annotation(self, setting_num: int) -> str:
-        """Returns from annotations on a specified number"""
 
-        one_idx, two_idx = 0, 0
-        all_tags_h2 = self.soup.find_all("h2")
+    def update_tags(self, all_tags_h2: list[str]):
         for idx in all_tags_h2:
             if idx.text == self.table_headers_text[0]:
                 one_idx = all_tags_h2.index(idx)
@@ -80,6 +77,15 @@ class Medicament:
         for bag in update_tags_h2:
             if bag.text == 'Дата последнего изменения':
                 update_tags_h2.remove(bag)
+        return update_tags_h2
+
+
+    def get_annotation(self, setting_num: int) -> str:
+        """Returns from annotations on a specified number"""
+
+        one_idx, two_idx = 0, 0
+        all_tags_h2 = self.soup.find_all("h2")
+        update_tags_h2 = self.update_tags(all_tags_h2)
 
         lines = []
         with open("medikoment776630117.html", "r", encoding="utf-8") as file:
