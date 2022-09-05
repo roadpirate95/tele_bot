@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 import logging
 import emoji
 
+
+
 from config import TOKEN
 from logic import create_browser, Medicament, Condition
 
@@ -15,6 +17,7 @@ bot = Bot(TOKEN)
 dp = Dispatcher(bot, storage=storage)
 logging.basicConfig(level=logging.WARNING)
 medicament = Medicament()
+
 
 
 @dp.message_handler(commands='start', state='*')
@@ -40,9 +43,9 @@ async def get_menu(message: types.Message, state: FSMContext):
             src = file.read()
 
         soup = BeautifulSoup(src, "lxml")
-        medicament.set_soup(soup)
+        # medicament.set_soup(soup)
 
-        instructions_for_the_drug = medicament.instructions()
+        instructions_for_the_drug = medicament.instructions(soup)
         logging.getLogger().info("instructions ready")
 
         numeric_instruction = medicament.numeric_instruction(instructions_for_the_drug)
@@ -70,7 +73,7 @@ async def get_property_for_digit(message: types.Message, state: FSMContext):
     logging.getLogger().info("sending property drug")
     if message.text.isdigit():
         await state.update_data(digit=message.text)
-        response_text = medicament.get_annotation(int(message.text))
+        response_text = medicament.get_annotation(int(message.text), message)
         await message.reply(f'----------{response_text}')
     elif message.text == emoji.emojize(
                                     "Чтобы перейти в режим поиска лекарства нажмите сюда :medical_symbol:"):
