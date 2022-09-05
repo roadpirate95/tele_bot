@@ -66,8 +66,8 @@ class Medicament:
 
         return [f'{i} : {arr[i]}' for i in range(len(arr))]
 
-
     def update_tags(self, all_tags_h2: list[str]):
+        one_idx, two_idx = 0, 0
         for idx in all_tags_h2:
             if idx.text == self.table_headers_text[0]:
                 one_idx = all_tags_h2.index(idx)
@@ -79,29 +79,27 @@ class Medicament:
                 update_tags_h2.remove(bag)
         return update_tags_h2
 
-
     def get_annotation(self, setting_num: int) -> str:
         """Returns from annotations on a specified number"""
 
-        one_idx, two_idx = 0, 0
         all_tags_h2 = self.soup.find_all("h2")
         update_tags_h2 = self.update_tags(all_tags_h2)
 
-        lines = []
+        lines_html = []
         with open("medikoment776630117.html", "r", encoding="utf-8") as file:
             for line in file:
                 if line == '':
                     continue
 
-                lines.append(' '.join(line.split()))
+                lines_html.append(' '.join(line.split()))
         dictionary_response = {}
         for h2_idx in range(len(update_tags_h2)+1):
             if update_tags_h2[h2_idx] == update_tags_h2[-1]:
                 break
 
-            index = lines.index(str(update_tags_h2[h2_idx]))
-            lines_index = lines.index(str(update_tags_h2[h2_idx + 1]))
-            dictionary_response[update_tags_h2[h2_idx].text] = lines[index:lines_index]
+            index = lines_html.index(str(update_tags_h2[h2_idx]))
+            lines_index = lines_html.index(str(update_tags_h2[h2_idx + 1]))
+            dictionary_response[update_tags_h2[h2_idx].text] = lines_html[index:lines_index]
         return BeautifulSoup(" ".join(
             dictionary_response[self.table_headers_text[setting_num]]), features="lxml").text
 
